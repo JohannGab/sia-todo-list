@@ -1,19 +1,16 @@
 import React, { useState } from 'react'
 import {
     StyledHome,
-    Title,
-    InputSend,
-    Container,
     ContainerAddOrSearch,
     AddOrSearch,
-    ContainerList,
-    ListItem,
-    Text,
-    ContainerButton,
     ContainerButtonFilter
 } from './home.style';
-import { Input, Space, List,Switch, Button } from 'antd';
+import { Space, Button } from 'antd';
 import DATA from '../Constant/data'
+import Title from '../Components/title'
+import Search from '../Components/search'
+import AddList from '../Components/addList';
+import ListData from '../Components/list';
 
 const compareAsc = (a, b) => {
     if (a.list < b.list) {
@@ -89,46 +86,31 @@ try{
 }
 
 const addItem = () => {
-    const newItem = [...list, {id: list.length +1, list: newPost}];
+    const newItem = [...list, {id: new Date().valueOf(), list: newPost}];
     setList(newItem);
 }
 
 const editItem = (e,value) => {
-    console.log(e.target.value, 'value',value);
     let newItem = list.filter(item => item !== e)
-    console.log('newItem ', newItem);
     const index = newItem.indexOf(value)
     newItem[index] = {id: value.id, list: e.target.value}
-    
-    console.log('newItem', newItem);
-        setList(newItem)
+    setList(newItem)
 }
 
 const deleteItem = (e) => {
-    console.log(e);
     let remove = list.filter(item => item !== e)
-        setList(remove)
+    setList(remove)
 }
-
     
     return (
         <StyledHome>
-            <Title>Todo List</Title>
+            <Title text={'Todo List'}/>
             <Space direction="vertical">
                 {postList 
                     ?
-                        <Input 
-                            onChange={(e) => onSearch(e.target.value)}
-                            placeholder="search Todo" 
-                        />
+                        <Search onSearch={onSearch}/>
                     :
-                        <InputSend>
-                            <Input 
-                                onChange={(e) => setNewPost(e.target.value)}
-                                placeholder="add todo" 
-                            />
-                            <Button type="primary" htmlType="submit" onClick={()=> addItem()}>Send</Button>
-                        </InputSend>
+                        <AddList setNewPost={setNewPost} addItem={addItem}/>
                 }
             </Space>
                 <ContainerAddOrSearch>
@@ -142,69 +124,22 @@ const deleteItem = (e) => {
                         </Button>
                     </AddOrSearch>
                 </ContainerAddOrSearch>
-            <Container>
-            <ListItem  
-                size="large"
-                bordered={true}
-                loading={list ? false : true}
-                dataSource={filterAscAndDesc(ascOrDesc)}
-                renderItem={
-                    item => 
-                        <List.Item key={item.id}>
-                        <Container>
-                            <Switch
-                                onChange={() => setShow(!show)}
-                            />
-                            <ContainerList>
-                                <Text show={show}>{item.list}</Text>
-                            </ContainerList>
-                                <ContainerButton>
-                                    {edit 
-                                        ?
-                                            <>
-                                                <Input  placeholder="Add Todo" onChange={(e) => editItem(e,item)}/>
-                                                <Button onClick={() => setEdit(!edit)}>Valid</Button>
-                                            </>
-                                        :
-                                                <Button type="primary" onClick={() => setEdit(!edit)}>Edit</Button>
-                                    }
-                                </ContainerButton>
-                                <ContainerButton>
-                                    <Button type="danger" onClick={() => deleteItem(item)}>Delete</Button>   
-                                </ContainerButton>
-                        </Container>
-                        </List.Item>
-                }
-            />
-            </Container>
+                <ListData
+                    list={list}
+                    filterAscAndDesc={filterAscAndDesc}
+                    ascOrDesc={ascOrDesc}
+                    setShow={setShow}
+                    show={show}
+                    edit={edit}
+                    editItem={editItem}
+                    setEdit={setEdit}
+                    deleteItem={deleteItem} />
             <ContainerButtonFilter>
-                <button onClick={() => setAscOrDesc(!ascOrDesc)}>{ascOrDesc ? 'ASC' : 'DESC'}</button>
-                <button onClick={() => setAscOrDesc('no filter')}>no filter</button>
+                <Button onClick={() => setAscOrDesc(!ascOrDesc)}>{ascOrDesc ? 'ASC' : 'DESC'}</Button>
+                <Button onClick={() => setAscOrDesc('no filter')}>no filter</Button>
             </ContainerButtonFilter>    
         </StyledHome>
     )
 }
 
-
 export default Home
-
-// <List
-// size="large"
-// bordered={true}
-// loading={DATA ? false : true}
-// dataSource={DATA}
-// renderItem={item => (
-    
-//     <>
-//             <Space>
-//             <Switch
-//                 onChange={() => setShow(!show)}
-//             />
-//             {item.list}
-            
-//                 <Button type="primary">Edit</Button>
-//                 <Button type="danger">Delete</Button>
-//         </Space>
-//     </>
-//     )}
-// />
