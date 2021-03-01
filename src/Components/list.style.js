@@ -20,7 +20,7 @@ export const ContainerList = styled.div`
 
 export const Text = styled.p`
     margin-left: 1rem;
-    text-decoration: ${({show}) => show ? 'line-through' : 'none'};
+    text-decoration: ${({show}) => show};
 `
 
 export const ContainerButton = styled.div`

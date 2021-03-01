@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Container, ListItem, ContainerList, Text, ContainerButton } from './list.style';
 import { Input, List, Switch, Button } from 'antd';
 
@@ -13,6 +13,23 @@ const ListData = ({
     setEdit,
     deleteItem,
 }) => {
+const [active, setActive] = useState('')
+
+const activate = (value) => {
+    setShow(!show)
+    setActive({value, activate: show})
+}
+
+const activateStyle = (value) => {
+    if(active.value === value) {
+        if(active.activate) {
+            return 'line-through'
+        } else {
+            return 'none'
+        } 
+    }
+}
+
     return (
         <Container>
             <ListItem  
@@ -25,10 +42,10 @@ const ListData = ({
                         <List.Item key={item.id}>
                         <Container>
                             <Switch
-                                onClick={() => setShow(!show)}
+                                onClick={() => activate(item.list)}
                             />
                             <ContainerList>
-                                <Text show={!show}>{item.list}</Text>
+                                <Text show={activateStyle(item.list)}>{item.list}</Text>
                             </ContainerList>
                                 <ContainerButton>
                                     {edit 
