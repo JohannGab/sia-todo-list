@@ -42,14 +42,35 @@ const noFiltre = (a, b) => {
     return 0;
 }
 
+const CompareDone = (a, b) => {
+    if (a.completed < b.completed) {
+        return +1;
+    }
+    if (a.completed > b.completed ) {
+        return -1;
+    }
+    return 0;
+}
+
+const CompareUndone = (a, b) => {
+    if (a.completed < b.completed) {
+        return -1;
+    }
+    if (a.completed > b.completed ) {
+        return +1;
+    }
+    return 0;
+}
+
+
 const Home = () => {
 const [list, setList] = useState(DATA)
-const [show, setShow] = useState(true);
 const [ascOrDesc, setAscOrDesc] = useState('no filter')
 const [edit, setEdit] = useState(false)
+const [completed, setCompleted] = useState(true)
 const [postList, setPostList] = useState(true)
 const [newPost, setNewPost] = useState('')
-
+const [defautList, setDefaultList] = useState(DATA)
 
 const handleSearch = ({ listName = [], value = '' }) => listName
 .filter(name => name.list.toLowerCase().indexOf(value.toLowerCase()) !== -1);
@@ -64,10 +85,10 @@ const onSearch = (value) => {
             setList(res)
         } 
         else {
-            return setList(DATA)
+            return setList(defautList);
         }
         } catch(err) {
-            return null
+            return console.error(err);
         }
     }
 
@@ -79,27 +100,57 @@ try{
         return list.sort(compareDesc)
     } else if (value === 'no filter'){
         return list.sort(noFiltre)
+    } else if (value === 'DONE') {
+        return list.sort(CompareDone)
+    } else if (value === 'UNDONE') {
+        return list.sort(CompareUndone)
+    } else {
+        return list
     }
 } catch(error) {
-        return console.log(error);
+        return console.error(error);
     }
 }
 
 const addItem = () => {
-    const newItem = [...list, {id: new Date().valueOf(), list: newPost}];
-    setList(newItem);
+    try {
+        const newItem = [...list, {id: new Date().valueOf(), list: newPost, completed: false}];
+        setList(newItem);
+        setDefaultList(newItem)
+    } catch(error) {
+        return console.error(error);
+    }
 }
 
 const editItem = (e,value) => {
-    let newItem = list.filter(item => item !== e)
-    const index = newItem.indexOf(value)
-    newItem[index] = {id: value.id, list: e.target.value}
-    setList(newItem)
+    try {
+        let newItem = list.filter(item => item !== e)
+        const index = newItem.indexOf(value)
+        newItem[index] = {id: value.id, list: e.target.value, completed: value.completed}
+        setList(newItem)
+    } catch(error) {
+        return console.error(error);
+    }
+}
+
+const editCompleted = (e,value) => {
+    try {
+        let newItem = list.filter(item => item !== e)
+        const index = newItem.indexOf(value)
+        newItem[index] = {id: value.id, list: value.list, completed: e}
+        setList(newItem)
+    } catch(error) {
+        return console.error(error);
+    }
 }
 
 const deleteItem = (e) => {
-    let remove = list.filter(item => item !== e)
-    setList(remove)
+    try {
+        let remove = list.filter(item => item !== e)
+        setList(remove)
+    } catch(error) {
+        return console.error(error);
+    }
 }
     
     return (
@@ -128,15 +179,30 @@ const deleteItem = (e) => {
                     list={list}
                     filterAscAndDesc={filterAscAndDesc}
                     ascOrDesc={ascOrDesc}
-                    setShow={setShow}
-                    show={show}
                     edit={edit}
                     editItem={editItem}
+                    editCompleted={editCompleted}
                     setEdit={setEdit}
                     deleteItem={deleteItem} />
             <ContainerButtonFilter>
-                <Button onClick={() => setAscOrDesc(!ascOrDesc)}>{ascOrDesc ? 'ASC' : 'DESC'}</Button>
-                <Button onClick={() => setAscOrDesc('no filter')}>no filter</Button>
+                <Button
+                    type={ascOrDesc ? 'primary' : 'dashed'}
+                    onClick={() => setAscOrDesc(!ascOrDesc)}>
+                        {ascOrDesc ? 'ASC' : 'DESC'}
+                </Button>
+                <Button
+                    style={{margin: '0 1rem'}}
+                    type={'primary'}
+                    onClick={() => setAscOrDesc('no filter') & setCompleted(false)}>
+                        no filter
+                </Button>
+                <Button
+                    type={completed ? 'primary' :'dashed' 
+                            && ascOrDesc === 'no filter' ? setCompleted(!completed) : null
+                        }
+                    onClick={() => setAscOrDesc(completed ? 'DONE' : 'UNDONE') & setCompleted(!completed)}>
+                        {completed ? 'DONE' : 'UNDONE'}
+                </Button>
             </ContainerButtonFilter>    
         </StyledHome>
     )

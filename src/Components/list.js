@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {Container, ListItem, ContainerList, Text, ContainerButton } from './list.style';
 import { Input, List, Switch, Button } from 'antd';
 
@@ -6,34 +6,24 @@ const ListData = ({
     list,
     filterAscAndDesc,
     ascOrDesc,
-    setShow,
-    show,
     edit,
     editItem,
+    editCompleted,
     setEdit,
     deleteItem,
 }) => {
-const [active, setActive] = useState('')
-
-const activate = (value) => {
-    setShow(!show)
-    setActive({value, activate: show})
-}
-
 const activateStyle = (value) => {
-    if(active.value === value) {
-        if(active.activate) {
-            return 'line-through'
-        } else {
-            return 'none'
-        } 
-    }
+    if(value === true) {
+        return 'line-through'
+    } else {
+        return 'none'
+    } 
 }
 
     return (
         <Container>
             <ListItem  
-                size="large"
+                size="small"
                 bordered={true}
                 loading={list ? false : true}
                 dataSource={filterAscAndDesc(ascOrDesc)}
@@ -42,17 +32,18 @@ const activateStyle = (value) => {
                         <List.Item key={item.id}>
                         <Container>
                             <Switch
-                                onClick={() => activate(item.list)}
+                                defaultChecked={item.completed}
+                                onClick={(e) => editCompleted(e,item)}
                             />
                             <ContainerList>
-                                <Text show={activateStyle(item.list)}>{item.list}</Text>
+                                <Text show={activateStyle(item.completed)}>{item.list}</Text>
                             </ContainerList>
                                 <ContainerButton>
                                     {edit 
                                         ?
                                             <>
                                                 <Input  placeholder="Add Todo" onChange={(e) => editItem(e,item)}/>
-                                                <Button onClick={() => setEdit(!edit)}>Valid</Button>
+                                                <Button type="primary" onClick={() => setEdit(!edit)}>Add Todo List</Button>
                                             </>
                                         :
                                                 <Button type="primary" onClick={() => setEdit(!edit)}>Edit</Button>
