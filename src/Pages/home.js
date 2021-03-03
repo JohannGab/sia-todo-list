@@ -128,6 +128,7 @@ const editItem = (e,value) => {
         const index = newItem.indexOf(value)
         newItem[index] = {id: value.id, list: e.target.value, completed: value.completed}
         setList(newItem)
+        setDefaultList(newItem)
     } catch(error) {
         return console.error(error);
     }
@@ -139,6 +140,7 @@ const editCompleted = (e,value) => {
         const index = newItem.indexOf(value)
         newItem[index] = {id: value.id, list: value.list, completed: e}
         setList(newItem)
+        setDefaultList(newItem)
     } catch(error) {
         return console.error(error);
     }
@@ -148,6 +150,7 @@ const deleteItem = (e) => {
     try {
         let remove = list.filter(item => item !== e)
         setList(remove)
+        setDefaultList(remove)
     } catch(error) {
         return console.error(error);
     }
