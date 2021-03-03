@@ -10,6 +10,10 @@ export const Container = styled.div`
             font-size: 0.8rem
         }
 `
+export const Label = styled.label`
+    font-weight: 500;
+`
+
 export const ListItem = styled(List)`
     width: 60%;
     margin-top: 2rem;
@@ -32,6 +36,10 @@ export const Text = styled.p`
     padding-top: 0.8rem;
     font-weight: 400;
     text-transform: capitalize;
+`
+
+export const EditModal = styled.div`
+    display: block;
 `
 
 export const ContainerButton = styled.div`

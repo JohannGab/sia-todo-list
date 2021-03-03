@@ -1,5 +1,5 @@
-import React from 'react';
-import {Container, ListItem, ContainerList, Text, ContainerButton } from './list.style';
+import React, { useState } from 'react';
+import {Container, Label, ListItem, ContainerList, Text, EditModal, ContainerButton } from './list.style';
 import { Input, List, Switch, Button } from 'antd';
 
 const ListData = ({
@@ -10,8 +10,11 @@ const ListData = ({
     editItem,
     editCompleted,
     setEdit,
+    saveEdit,
     deleteItem,
 }) => {
+const [selectItem ,setSelectItem] = useState('')
+
 const activateStyle = (value) => {
     if(value === true) {
         return 'line-through'
@@ -22,7 +25,25 @@ const activateStyle = (value) => {
 
     return (
         <Container>
+            {edit &&
+                <EditModal>
+                    <Label>Edit Todo</Label>
+                    <Input  
+                        placeholder="Edit Todo" 
+                        defaultValue={selectItem.list} 
+                        onChange={(e) => editItem(e, selectItem)}
+                        style={{marginBottom: '1rem'}}
+                    />
+                    <Button 
+                        type="primary" 
+                        onClick={() => saveEdit() & setEdit(!edit)}
+                    >
+                        Add Todo List
+                    </Button>
+                </EditModal>
+            }
             <ListItem  
+                style={edit ? {display: 'none'}:  null}
                 size="small"
                 bordered={true}
                 loading={list ? false : true}
@@ -39,15 +60,7 @@ const activateStyle = (value) => {
                                 <Text show={activateStyle(item.completed)}>{item.list}</Text>
                             </ContainerList>
                                 <ContainerButton>
-                                    {edit 
-                                        ?
-                                            <>
-                                                <Input  placeholder="Add Todo" onChange={(e) => editItem(e,item)}/>
-                                                <Button type="primary" onClick={() => setEdit(!edit)}>Add Todo List</Button>
-                                            </>
-                                        :
-                                                <Button type="primary" onClick={() => setEdit(!edit)}>Edit</Button>
-                                    }
+                                    <Button type="primary" onClick={() => setEdit(!edit) & setSelectItem(item)}>Edit</Button>
                                 </ContainerButton>
                                 <ContainerButton>
                                     <Button type="danger" onClick={() => deleteItem(item)}>Delete</Button>   
