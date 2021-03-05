@@ -46,7 +46,7 @@ const activateStyle = (value) => {
                 style={edit ? {display: 'none'}:  null}
                 size="small"
                 bordered={true}
-                loading={list ? false : true}
+                loading={list.length === 0 ? true : false}
                 dataSource={filterAscAndDesc(ascOrDesc)}
                 renderItem={
                     item => 
