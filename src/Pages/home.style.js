@@ -17,3 +17,7 @@ export const AddOrSearch = styled.div`
 export const ContainerButtonFilter = styled.div`
     margin-top: 2rem;
 `
+
+export const StyledChangePage = styled.div`
+    margin-top: 2rem;
+`

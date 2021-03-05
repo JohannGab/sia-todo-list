@@ -3,7 +3,8 @@ import {
     StyledHome,
     ContainerAddOrSearch,
     AddOrSearch,
-    ContainerButtonFilter
+    ContainerButtonFilter,
+    StyledChangePage
 } from './home.style';
 import { Space, Button } from 'antd';
 import DATA from '../Constant/data'
@@ -11,6 +12,7 @@ import Title from '../Components/title'
 import Search from '../Components/search'
 import AddList from '../Components/addList';
 import ListData from '../Components/list';
+import { Link } from 'react-router-dom';
 
 const compareAsc = (a, b) => {
     if (a.list < b.list) {
@@ -200,6 +202,11 @@ const deleteItem = (e) => {
                     </Button>
                 </ContainerButtonFilter> 
             }   
+            <StyledChangePage>
+                <Button type={"dashed"}>
+                    <Link to="/v2">Todo List V2</Link>
+                </Button>
+            </StyledChangePage>
         </StyledHome>
     )
 }
