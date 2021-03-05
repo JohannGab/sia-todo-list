@@ -1,0 +1,14 @@
+{
+  "list": [
+    {
+      "id": 0,
+      "list": "Salade",
+      "completed": false
+    },
+    {
+      "id": 1,
+      "list": "Banane",
+      "completed": false
+    }
+  ]
+}

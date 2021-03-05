@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import {
     StyledHome,
     ContainerAddOrSearch,
@@ -6,11 +6,10 @@ import {
     ContainerButtonFilter
 } from './home.style';
 import { Space, Button } from 'antd';
-import DATA from '../Constant/data'
-import Title from '../Components/title'
-import Search from '../Components/search'
+import Title from '../Components/title';
+import Search from '../Components/search';
 import AddList from '../Components/addList';
-import ListData from '../Components/list';
+import ListData from '../Components/listV2';
 
 const compareAsc = (a, b) => {
     if (a.list < b.list) {
@@ -62,17 +61,17 @@ const CompareUndone = (a, b) => {
     return 0;
 }
 
-/////////////////////////******** Sans Json serveur ********/////////////////////////
+
+/////////////////////////******** Avec Json serveur ********/////////////////////////
 
 const Home = () => {
-const [list, setList] = useState(DATA)
+const [list, setList] = useState([])
 const [ascOrDesc, setAscOrDesc] = useState('no filter')
 const [edit, setEdit] = useState(false)
 const [completed, setCompleted] = useState(true)
 const [postList, setPostList] = useState(true)
 const [newPost, setNewPost] = useState('')
-const [defautList, setDefaultList] = useState(DATA)
-const [defaultModal, setDefaultModal] = useState(DATA)
+const [defautList, setDefaultList] = useState([])
 
 const handleSearch = ({ listName = [], value = '' }) => listName
 .filter(name => name.list.toLowerCase().indexOf(value.toLowerCase()) !== -1);
@@ -110,37 +109,90 @@ const filterAscAndDesc = (value) => {
     }
 }
 
+useEffect((id) => {
+    getItem()
+}, [])
+
+const getItem = () => {
+    fetch('http://localhost:3001/list')
+    .then((response) => response.json())
+    .then((json) => [setList(json), setDefaultList(json)])
+    .catch(error => (
+        console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message)
+    ))
+}
+
+const postItem = ({id, list, completed}) => {
+    fetch('http://localhost:3001/list', {
+        method: 'POST',
+        body: JSON.stringify({
+            id,
+            list,
+            completed
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        .then((json) => json)
+        .catch(error => (
+            console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message)
+        ))
+}
+
 const addItem = () => {
-    const newItem = [...list, {id: new Date().valueOf(), list: newPost, completed: false}];
-    setList(newItem);
-    setDefaultList(newItem)
+    const newItem = {id: new Date().valueOf(), list: newPost, completed: false};
+    postItem(newItem)
+    getItem()
+    setPostList(!postList)
 }
 
-const editItem = (e,value) => {
-    let newItem = list.filter(item => item !== e)
-    const index = newItem.indexOf(value)
-    newItem[index] = {id: value.id, list: e ? e.target.value : value.list, completed: value.completed}
-    setDefaultModal(newItem)
+const editItem = (id, list) => {
+    fetch(`http://localhost:3001/list/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            list
+    }),
+    headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+    },
+})
+    .then((response) => response.json())
+    .then((json) => json)
+    .then(() => getItem())
+    .catch(error => (
+        console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message)
+    ))
 }
 
-const saveEdit = () => {
-    setList(defaultModal)
-    setDefaultList(defaultModal)
-} 
-
-const editCompleted = (e,value) => {
-    let newItem = list.filter(item => item !== e)
-    const index = newItem.indexOf(value)
-    newItem[index] = {id: value.id, list: value.list, completed: e}
-    setList(newItem)
-    setDefaultList(newItem)
+const editCompleted = (id, value) => {
+    fetch(`http://localhost:3001/list/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            completed: !value,
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    })
+        .then((response) => response.json())
+        .then((json) => json)
+        .then(() => getItem())
+        .catch(error => (
+            console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message)
+        ))
 }
 
-const deleteItem = (e) => {
-    let remove = list.filter(item => item !== e)
-    setList(remove)
-    setDefaultList(remove)
+const deleteItem = (id) => {
+    fetch(`http://localhost:3001/list/${id}`, {
+        method: 'DELETE',
+    }, window.location.reload())
+    .catch(error => (
+        console.log('Il y a eu un problème avec l\'opération fetch: ' + error.message)
+    ))
 }
+
     
     return (
         <StyledHome>
@@ -175,8 +227,7 @@ const deleteItem = (e) => {
                     editItem={editItem}
                     editCompleted={editCompleted}
                     setEdit={setEdit}
-                    saveEdit={saveEdit}
-                    deleteItem={deleteItem} 
+                    deleteItem={deleteItem}
                 />
             {!edit &&
                 <ContainerButtonFilter>
